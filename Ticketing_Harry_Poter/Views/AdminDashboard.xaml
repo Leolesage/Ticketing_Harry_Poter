@@ -1,0 +1,96 @@
+<Window x:Class="Ticketing_Harry_Poter.Views.AdminDashboard"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Tableau de bord Administrateur"
+        Width="1920" Height="1080"
+        WindowStartupLocation="CenterScreen"
+        WindowState="Normal">
+    <DockPanel>
+        <!-- Barre d'outils -->
+        <ToolBar DockPanel.Dock="Top">
+            <Button Content="Rafraîchir" Click="Refresh_Click"/>
+            <Separator/>
+            <Label Content="Rechercher :"/>
+            <TextBox x:Name="SearchBox" Width="200" TextChanged="SearchBox_TextChanged"/>
+            <Separator/>
+            <Label Content="Filtrer statut :"/>
+            <ComboBox x:Name="StatusFilter" Width="150" SelectionChanged="Filter_Changed"/>
+            <Separator/>
+            <Button Content="Nouveau ticket" Click="NewTicket_Click"/>
+        </ToolBar>
+
+        <!-- Grille + panneau détails -->
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="3*"/>
+                <ColumnDefinition Width="2*"/>
+            </Grid.ColumnDefinitions>
+
+            <!-- Liste des tickets -->
+            <DataGrid x:Name="TicketsGrid"
+                AutoGenerateColumns="False"
+                IsReadOnly="True"
+                SelectionChanged="TicketsGrid_SelectionChanged"
+                Margin="10">
+                <DataGrid.Columns>
+                    <DataGridTextColumn Header="ID"        Binding="{Binding Id}"            Width="50"/>
+                    <DataGridTextColumn Header="Titre"     Binding="{Binding Title}"         Width="*"/>
+                    <DataGridTextColumn Header="Auteur"    Binding="{Binding User.Username}" Width="150"/>
+                    <DataGridTextColumn Header="Niveau"    Binding="{Binding IncidentLevel}" Width="80"/>
+                    <DataGridTextColumn Header="Catégorie" Binding="{Binding Category}"      Width="150"/>
+                    <DataGridTextColumn Header="Priorité"  Binding="{Binding Priority}"      Width="150"/>
+                    <DataGridTextColumn Header="Statut"    Binding="{Binding Status}"        Width="100"/>
+                    <DataGridTextColumn Header="Créé le"   Binding="{Binding CreatedAt}"     Width="200"/>
+                </DataGrid.Columns>
+            </DataGrid>
+
+            <!-- Panneau détails / édition -->
+            <StackPanel Grid.Column="1" Margin="20">
+                <TextBlock Text="Détails du ticket"
+                   FontSize="18" FontWeight="Bold" Margin="0,0,0,10"/>
+
+                <Label Content="Titre :"/>
+                <TextBox x:Name="DetailTitle"/>
+
+                <Label Content="Description :" Margin="0,10,0,0"/>
+                <TextBox x:Name="DetailDesc" Height="150" TextWrapping="Wrap" VerticalScrollBarVisibility="Auto"/>
+
+                <Label Content="Catégorie :" Margin="0,10,0,0"/>
+                <ComboBox x:Name="DetailCategory"/>
+
+                <Label Content="Priorité :" Margin="0,10,0,0"/>
+                <ComboBox x:Name="DetailPriority"/>
+
+                <Label Content="Statut :" Margin="0,10,0,0"/>
+                <ComboBox x:Name="DetailStatus" Width="150"/>
+
+                <Label Content="Niveau Incident :" Margin="0,10,0,0"/>
+                <TextBlock x:Name="DetailLevel" FontWeight="Bold" Margin="0,0,0,10"/>
+
+                <!-- Actions : Enregistrer, Escalader, Supprimer -->
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,10,0,0">
+                    <Button Content="Enregistrer" Width="120" Click="Save_Click" Margin="0,0,10,0"/>
+                    <Button Content="Escalader niveau" Width="150" Click="Escalate_Click" Margin="0,0,10,0"/>
+                    <Button Content="Supprimer" Width="120" Click="Delete_Click"/>
+                </StackPanel>
+
+                <!-- Section Commentaires -->
+                <Separator Margin="0,20,0,20"/>
+                <TextBlock Text="Commentaires" FontSize="16" FontWeight="Bold"/>
+                <ListBox x:Name="CommentsList" Height="200" Margin="0,5,0,10">
+                    <ListBox.ItemTemplate>
+                        <DataTemplate>
+                            <StackPanel Margin="0,5">
+                                <TextBlock Text="{Binding Author}" FontWeight="Bold"/>
+                                <TextBlock Text="{Binding CreatedAt, StringFormat=\{0:yyyy-MM-dd HH:mm\}}" FontStyle="Italic" FontSize="10"/>
+                                <TextBlock Text="{Binding Content}" TextWrapping="Wrap" Margin="0,2,0,0"/>
+                            </StackPanel>
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
+                <TextBox x:Name="NewCommentBox" Height="60" TextWrapping="Wrap" AcceptsReturn="True" VerticalScrollBarVisibility="Auto"/>
+                <Button Content="Ajouter commentaire" Width="160" HorizontalAlignment="Right" Click="AddComment_Click" Margin="0,5,0,0"/>
+            </StackPanel>
+        </Grid>
+    </DockPanel>
+</Window>
