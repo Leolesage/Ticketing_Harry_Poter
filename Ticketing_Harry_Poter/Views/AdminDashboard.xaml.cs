@@ -18,9 +18,11 @@ namespace Ticketing_Harry_Poter.Views
             InitializeComponent();
             _adminLevel = adminLevel;
 
-            // Init filtres et dropdowns
+            // Remplissage des filtres
             StatusFilter.ItemsSource = new[] { "Tous", "Ouvert", "En attente", "Clos" };
             StatusFilter.SelectedIndex = 0;
+
+            // Remplissage des listes de détails
             DetailCategory.ItemsSource = new[] { "Incident", "Réseau", "Prêt de matériel", "Dossier partagé" };
             DetailPriority.ItemsSource = new[] { "Basse", "Normale", "Élevée" };
             DetailStatus.ItemsSource = new[] { "Ouvert", "En attente", "Clos" };
@@ -32,9 +34,7 @@ namespace Ticketing_Harry_Poter.Views
         {
             using var db = new AppDbContext();
             var all = db.Tickets.Include(t => t.User).ToList();
-            _tickets = all
-                .Where(t => t.IncidentLevel <= _adminLevel)
-                .AsQueryable();
+            _tickets = all.Where(t => t.IncidentLevel <= _adminLevel).AsQueryable();
             RefreshView();
         }
 
@@ -43,15 +43,15 @@ namespace Ticketing_Harry_Poter.Views
             if (_tickets == null) return;
             var view = _tickets;
 
-            // Filtre statut
+            // Filtre sur le statut
             var statut = StatusFilter.SelectedItem?.ToString();
             if (!string.IsNullOrWhiteSpace(statut) && statut != "Tous")
             {
-                if (statut == "En attente") statut = "EnAttente";
+                // On compare directement à "En attente", "Ouvert" ou "Clos"
                 view = view.Where(t => t.Status == statut);
             }
 
-            // Filtre recherche
+            // Filtre sur la recherche texte
             var q = SearchBox.Text?.Trim().ToLower() ?? "";
             if (!string.IsNullOrWhiteSpace(q))
                 view = view.Where(t =>
@@ -60,6 +60,7 @@ namespace Ticketing_Harry_Poter.Views
 
             TicketsGrid.ItemsSource = view.ToList();
         }
+
 
         private void Refresh_Click(object sender, RoutedEventArgs e) => LoadTickets();
         private void SearchBox_TextChanged(object sender, TextChangedEventArgs e) => RefreshView();
@@ -74,15 +75,12 @@ namespace Ticketing_Harry_Poter.Views
             DetailCategory.SelectedItem = t.Category;
             DetailPriority.SelectedItem = t.Priority;
             DetailStatus.SelectedItem = t.Status;
-            DetailLevel.Text = t.IncidentLevel.ToString();
 
-            // Charge les commentaires
             using var db = new AppDbContext();
-            var comments = db.Comments
-                             .Where(c => c.TicketId == t.Id)
-                             .OrderBy(c => c.CreatedAt)
-                             .ToList();
-            CommentsList.ItemsSource = comments;
+            CommentsList.ItemsSource = db.Comments
+                                          .Where(c => c.TicketId == t.Id)
+                                          .OrderBy(c => c.CreatedAt)
+                                          .ToList();
         }
 
         private void Save_Click(object sender, RoutedEventArgs e)
@@ -100,6 +98,7 @@ namespace Ticketing_Harry_Poter.Views
             ticket.UpdatedAt = DateTime.Now;
             db.SaveChanges();
 
+            MessageBox.Show("Le ticket a été sauvegardé.", "Succès", MessageBoxButton.OK, MessageBoxImage.Information);
             LoadTickets();
         }
 
@@ -108,40 +107,30 @@ namespace Ticketing_Harry_Poter.Views
             if (!(TicketsGrid.SelectedItem is Ticket t)) return;
             if (t.IncidentLevel >= 3)
             {
-                MessageBox.Show("Ce ticket est déjà au niveau maximal.",
-                                "Escalade impossible",
-                                MessageBoxButton.OK,
-                                MessageBoxImage.Information);
+                MessageBox.Show("Niveau maximal atteint.", "Info", MessageBoxButton.OK, MessageBoxImage.Information);
                 return;
             }
 
-            var result = MessageBox.Show(
-                $"Voulez-vous vraiment passer le ticket '{t.Title}' du niveau {t.IncidentLevel} au niveau {t.IncidentLevel + 1} ?",
-                "Confirmation d'escalade",
-                MessageBoxButton.YesNo,
-                MessageBoxImage.Question);
-            if (result != MessageBoxResult.Yes) return;
+            var res = MessageBox.Show(
+                $"Escalader «{t.Title}» de niveau {t.IncidentLevel} à {t.IncidentLevel + 1} ?",
+                "Confirmation", MessageBoxButton.YesNo, MessageBoxImage.Question);
+            if (res != MessageBoxResult.Yes) return;
 
             using var db = new AppDbContext();
             var ticket = db.Tickets.Find(t.Id);
-            if (ticket == null) return;
-
             ticket.IncidentLevel++;
             ticket.UpdatedAt = DateTime.Now;
             db.SaveChanges();
 
+            MessageBox.Show("Escalade réussie.", "Succès", MessageBoxButton.OK, MessageBoxImage.Information);
             LoadTickets();
         }
 
         private void Delete_Click(object sender, RoutedEventArgs e)
         {
             if (!(TicketsGrid.SelectedItem is Ticket t)) return;
-            var result = MessageBox.Show(
-                $"Voulez-vous vraiment supprimer le ticket « {t.Title} » ?",
-                "Confirmation de suppression",
-                MessageBoxButton.YesNo,
-                MessageBoxImage.Warning);
-            if (result != MessageBoxResult.Yes) return;
+            var res = MessageBox.Show($"Supprimer «{t.Title}» ?", "Confirmation", MessageBoxButton.YesNo, MessageBoxImage.Warning);
+            if (res != MessageBoxResult.Yes) return;
 
             using var db = new AppDbContext();
             var ticket = db.Tickets.Find(t.Id);
@@ -151,6 +140,7 @@ namespace Ticketing_Harry_Poter.Views
                 db.SaveChanges();
             }
 
+            MessageBox.Show("Ticket supprimé.", "Succès", MessageBoxButton.OK, MessageBoxImage.Information);
             LoadTickets();
         }
 
@@ -161,29 +151,32 @@ namespace Ticketing_Harry_Poter.Views
             if (string.IsNullOrWhiteSpace(content)) return;
 
             using var db = new AppDbContext();
-            var comment = new Comment
+            db.Comments.Add(new Comment
             {
                 TicketId = t.Id,
                 Author = $"Admin{_adminLevel}",
                 Content = content,
                 CreatedAt = DateTime.Now
-            };
-            db.Comments.Add(comment);
+            });
             db.SaveChanges();
 
-            // Recharge
-            var comments = db.Comments
-                             .Where(c => c.TicketId == t.Id)
-                             .OrderBy(c => c.CreatedAt)
-                             .ToList();
-            CommentsList.ItemsSource = comments;
-
             NewCommentBox.Clear();
+            LoadTickets();
         }
+
 
         private void NewTicket_Click(object sender, RoutedEventArgs e)
         {
-            // Stub admin
+            var win = new NewTicketWindow(null) { Owner = this };
+            if (win.ShowDialog() == true)
+                LoadTickets();
+        }
+
+        private void BtnHome_Click(object sender, RoutedEventArgs e)
+        {
+            var login = new LoginWindow();
+            login.Show();
+            this.Close();
         }
     }
 }

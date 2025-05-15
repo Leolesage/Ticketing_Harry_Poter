@@ -13,9 +13,10 @@ namespace Ticketing_Harry_Poter.Models
         public string Category { get; set; }
         public string Priority { get; set; }
         public string Status { get; set; }
-        public int IncidentLevel { get; set; }    // <— nouveau
+        public int IncidentLevel { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime? UpdatedAt { get; set; }
-        public ICollection<Comment> Comments { get; set; }
+
+        public List<Comment> Comments { get; set; }
     }
 }

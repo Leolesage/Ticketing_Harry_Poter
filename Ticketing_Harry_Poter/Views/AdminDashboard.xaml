@@ -1,96 +1,211 @@
 <Window x:Class="Ticketing_Harry_Poter.Views.AdminDashboard"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="Tableau de bord Administrateur"
-        Width="1920" Height="1080"
+        Title="Le Grand Registre"
         WindowStartupLocation="CenterScreen"
-        WindowState="Normal">
-    <DockPanel>
-        <!-- Barre d'outils -->
-        <ToolBar DockPanel.Dock="Top">
-            <Button Content="Rafraîchir" Click="Refresh_Click"/>
-            <Separator/>
-            <Label Content="Rechercher :"/>
-            <TextBox x:Name="SearchBox" Width="200" TextChanged="SearchBox_TextChanged"/>
-            <Separator/>
-            <Label Content="Filtrer statut :"/>
-            <ComboBox x:Name="StatusFilter" Width="150" SelectionChanged="Filter_Changed"/>
-            <Separator/>
-            <Button Content="Nouveau ticket" Click="NewTicket_Click"/>
-        </ToolBar>
+        WindowState="Maximized"
+        WindowStyle="None"
+        ResizeMode="NoResize">
 
-        <!-- Grille + panneau détails -->
-        <Grid>
+    <Window.Resources>
+        <!-- Fond principal : château -->
+        <ImageBrush x:Key="CastleBrush"
+                ImageSource="pack://application:,,,/Ticketing_Harry_Poter;component/Resources/caste.jpg"
+                Stretch="UniformToFill"/>
+        <!-- Fond panneau détails : parchemin ticket.png -->
+        <ImageBrush x:Key="TicketBrush"
+                ImageSource="pack://application:,,,/Ticketing_Harry_Poter;component/Resources/ticket.png"
+                Stretch="UniformToFill"/>
+        <!-- Style générique pour boutons arrondis -->
+        <Style x:Key="RoundedButtonStyle" TargetType="Button">
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="FontFamily" Value="{StaticResource HarryPFont}"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="Height" Value="36"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}"
+                    CornerRadius="18">
+                            <ContentPresenter HorizontalAlignment="Center"
+                                VerticalAlignment="Center"/>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </Window.Resources>
+
+    <!-- Applique le château en fond de fenêtre -->
+    <Window.Background>
+        <StaticResource ResourceKey="CastleBrush"/>
+    </Window.Background>
+
+    <Grid>
+        <!-- En-tête + Contenu -->
+        <Grid.RowDefinitions>
+            <RowDefinition Height="60"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="2*"/>
+            <ColumnDefinition Width="1*"/>
+        </Grid.ColumnDefinitions>
+
+        <!-- ========== EN-TÊTE ========== -->
+        <Grid Grid.Row="0" Grid.ColumnSpan="2" Background="#80000000">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="3*"/>
-                <ColumnDefinition Width="2*"/>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
+            <!-- Logo cliquable -->
+            <Button x:Name="BtnHome"
+              Grid.Column="0"
+              Width="40" Height="40"
+              Margin="10"
+              Background="Transparent"
+              BorderThickness="0"
+              Click="BtnHome_Click">
+                <Image Source="pack://application:,,,/Ticketing_Harry_Poter;component/Resources/logo.png"
+               Stretch="Uniform"/>
+            </Button>
+            <!-- Titre centré -->
+            <TextBlock Grid.Column="1"
+                 Text="LE GRAND REGISTRE"
+                 FontFamily="{StaticResource HarryPFont}"
+                 FontSize="28"
+                 Foreground="White"
+                 VerticalAlignment="Center"
+                 HorizontalAlignment="Center"/>
+        </Grid>
 
-            <!-- Liste des tickets -->
+        <!-- ========== COLONNE GAUCHE : FILTRES & TABLEAU ========== -->
+        <Grid Grid.Row="1" Grid.Column="0" Margin="20,10,10,20">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+
+            <!-- Filtres & nouveau ticket -->
+            <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="0,0,0,10">
+                <ComboBox x:Name="StatusFilter"
+                  Width="120"
+                  SelectionChanged="Filter_Changed"/>
+                <TextBox x:Name="SearchBox"
+                 Width="200"
+                 VerticalContentAlignment="Center"
+                 TextChanged="SearchBox_TextChanged"
+                 Margin="10,0,0,0"/>
+                <Button Content="Rafraîchir"
+                Click="Refresh_Click"
+                Margin="10,0,0,0"/>
+                <Button Content="Nouveau Ticket"
+                Click="NewTicket_Click"
+                Margin="20,0,0,0"/>
+            </StackPanel>
+
+            <!-- DataGrid -->
             <DataGrid x:Name="TicketsGrid"
+                Grid.Row="1"
                 AutoGenerateColumns="False"
                 IsReadOnly="True"
                 SelectionChanged="TicketsGrid_SelectionChanged"
-                Margin="10">
+                Background="#C0FFFFFF">
                 <DataGrid.Columns>
-                    <DataGridTextColumn Header="ID"        Binding="{Binding Id}"            Width="50"/>
-                    <DataGridTextColumn Header="Titre"     Binding="{Binding Title}"         Width="*"/>
-                    <DataGridTextColumn Header="Auteur"    Binding="{Binding User.Username}" Width="150"/>
-                    <DataGridTextColumn Header="Niveau"    Binding="{Binding IncidentLevel}" Width="80"/>
-                    <DataGridTextColumn Header="Catégorie" Binding="{Binding Category}"      Width="150"/>
-                    <DataGridTextColumn Header="Priorité"  Binding="{Binding Priority}"      Width="150"/>
-                    <DataGridTextColumn Header="Statut"    Binding="{Binding Status}"        Width="100"/>
-                    <DataGridTextColumn Header="Créé le"   Binding="{Binding CreatedAt}"     Width="200"/>
+                    <DataGridTextColumn Header="ID"          Binding="{Binding Id}"            Width="40"/>
+                    <DataGridTextColumn Header="Titre"       Binding="{Binding Title}"         Width="*"/>
+                    <DataGridTextColumn Header="Utilisateur" Binding="{Binding User.Username}" Width="120"/>
+                    <DataGridTextColumn Header="Créé le"     Binding="{Binding CreatedAt}"     Width="150"/>
+                    <DataGridTextColumn Header="Statut"      Binding="{Binding Status}"        Width="100"/>
+                    <DataGridTextColumn Header="Niv."        Binding="{Binding IncidentLevel}" Width="60"/>
                 </DataGrid.Columns>
             </DataGrid>
-
-            <!-- Panneau détails / édition -->
-            <StackPanel Grid.Column="1" Margin="20">
-                <TextBlock Text="Détails du ticket"
-                   FontSize="18" FontWeight="Bold" Margin="0,0,0,10"/>
-
-                <Label Content="Titre :"/>
-                <TextBox x:Name="DetailTitle"/>
-
-                <Label Content="Description :" Margin="0,10,0,0"/>
-                <TextBox x:Name="DetailDesc" Height="150" TextWrapping="Wrap" VerticalScrollBarVisibility="Auto"/>
-
-                <Label Content="Catégorie :" Margin="0,10,0,0"/>
-                <ComboBox x:Name="DetailCategory"/>
-
-                <Label Content="Priorité :" Margin="0,10,0,0"/>
-                <ComboBox x:Name="DetailPriority"/>
-
-                <Label Content="Statut :" Margin="0,10,0,0"/>
-                <ComboBox x:Name="DetailStatus" Width="150"/>
-
-                <Label Content="Niveau Incident :" Margin="0,10,0,0"/>
-                <TextBlock x:Name="DetailLevel" FontWeight="Bold" Margin="0,0,0,10"/>
-
-                <!-- Actions : Enregistrer, Escalader, Supprimer -->
-                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,10,0,0">
-                    <Button Content="Enregistrer" Width="120" Click="Save_Click" Margin="0,0,10,0"/>
-                    <Button Content="Escalader niveau" Width="150" Click="Escalate_Click" Margin="0,0,10,0"/>
-                    <Button Content="Supprimer" Width="120" Click="Delete_Click"/>
-                </StackPanel>
-
-                <!-- Section Commentaires -->
-                <Separator Margin="0,20,0,20"/>
-                <TextBlock Text="Commentaires" FontSize="16" FontWeight="Bold"/>
-                <ListBox x:Name="CommentsList" Height="200" Margin="0,5,0,10">
-                    <ListBox.ItemTemplate>
-                        <DataTemplate>
-                            <StackPanel Margin="0,5">
-                                <TextBlock Text="{Binding Author}" FontWeight="Bold"/>
-                                <TextBlock Text="{Binding CreatedAt, StringFormat=\{0:yyyy-MM-dd HH:mm\}}" FontStyle="Italic" FontSize="10"/>
-                                <TextBlock Text="{Binding Content}" TextWrapping="Wrap" Margin="0,2,0,0"/>
-                            </StackPanel>
-                        </DataTemplate>
-                    </ListBox.ItemTemplate>
-                </ListBox>
-                <TextBox x:Name="NewCommentBox" Height="60" TextWrapping="Wrap" AcceptsReturn="True" VerticalScrollBarVisibility="Auto"/>
-                <Button Content="Ajouter commentaire" Width="160" HorizontalAlignment="Right" Click="AddComment_Click" Margin="0,5,0,0"/>
-            </StackPanel>
         </Grid>
-    </DockPanel>
+
+        <!-- ========== COLONNE DROITE : DÉTAILS DU TICKET ========== -->
+        <Border Grid.Row="1" Grid.Column="1"
+            Background="{StaticResource TicketBrush}"
+            Margin="10,10,20,20">
+            <ScrollViewer VerticalScrollBarVisibility="Auto">
+                <StackPanel Margin="20" >
+
+                    <TextBlock Text="DÉTAILS DU TICKET"
+                     FontFamily="{StaticResource HarryPFont}"
+                     FontSize="20"
+                     Foreground="#7F0909"
+                     TextAlignment="Center"
+                     Margin="0,0,0,16"/>
+
+                    <!-- TITRE -->
+                    <TextBlock Text="TITRE" FontFamily="{StaticResource CinzelRegular}" FontSize="12"/>
+                    <TextBox x:Name="DetailTitle" Margin="0,4,0,12"/>
+
+                    <!-- DESCRIPTION -->
+                    <TextBlock Text="DESCRIPTION" FontFamily="{StaticResource CinzelRegular}" FontSize="12"/>
+                    <TextBox x:Name="DetailDesc"
+                   Height="80"
+                   TextWrapping="Wrap"
+                   AcceptsReturn="True"
+                   Margin="0,4,0,12"/>
+
+                    <!-- CATÉGORIE -->
+                    <TextBlock Text="CATÉGORIE" FontFamily="{StaticResource CinzelRegular}" FontSize="12"/>
+                    <ComboBox x:Name="DetailCategory" Margin="0,4,0,12"/>
+
+                    <!-- PRIORITÉ -->
+                    <TextBlock Text="PRIORITÉ" FontFamily="{StaticResource CinzelRegular}" FontSize="12"/>
+                    <ComboBox x:Name="DetailPriority" Margin="0,4,0,12"/>
+
+                    <!-- STATUT -->
+                    <TextBlock Text="STATUT" FontFamily="{StaticResource CinzelRegular}" FontSize="12"/>
+                    <ComboBox x:Name="DetailStatus" Margin="0,4,0,12"/>
+                    <!-- COMMENTAIRES -->
+                    <TextBlock Text="COMMENTAIRES" FontFamily="{StaticResource CinzelRegular}" FontSize="12"/>
+                    <ListBox x:Name="CommentsList"
+                   Height="80"
+                   Margin="0,4,0,12"
+                   DisplayMemberPath="Content"/>
+
+                    <TextBox x:Name="NewCommentBox"
+                   Height="60"
+                   TextWrapping="Wrap"
+                   AcceptsReturn="True"
+                   Margin="0,4,0,12"/>
+
+                    <!-- Boutons d’action : Sauver / Escalader / Supprimer -->
+                    <StackPanel Orientation="Horizontal"
+                      HorizontalAlignment="Center"
+                      Margin="0,12,0,0">
+                        <Button Content="Sauver"
+                    Click="Save_Click"
+                    Style="{StaticResource RoundedButtonStyle}"
+                    Background="#2A623D"
+                    Width="100"
+                    Margin="0,0,10,0"/>
+                        <Button Content="Escalader"
+                    Click="Escalate_Click"
+                    Style="{StaticResource RoundedButtonStyle}"
+                    Background="#D3A625"
+                    Width="100"
+                    Margin="0,0,10,0"/>
+                        <Button Content="Supprimer"
+                    Click="Delete_Click"
+                    Style="{StaticResource RoundedButtonStyle}"
+                    Background="#7F0909"
+                    Width="100"/>
+                    </StackPanel>
+
+                    <!-- Ajouter nouveau commentaire -->
+                    <Button Content="Ajouter commentaire"
+                    Click="AddComment_Click"
+                    Style="{StaticResource RoundedButtonStyle}"
+                    Background="#7F0909"
+                    HorizontalAlignment="Right"
+                    Margin="0,16,0,0"
+                    MinWidth="160"
+                    Height="36"/>
+                </StackPanel>
+            </ScrollViewer>
+        </Border>
+    </Grid>
 </Window>

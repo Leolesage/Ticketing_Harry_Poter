@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using Ticketing_Harry_Poter.Data;
@@ -18,23 +19,32 @@ namespace Ticketing_Harry_Poter.Views
             LoadMyTickets();
         }
 
+        // Charge les tickets de l'utilisateur
         private void LoadMyTickets()
         {
             using var db = new AppDbContext();
-            var tickets = db.Tickets
-                            .Where(t => t.UserId == _currentUser.Id)
-                            .OrderByDescending(t => t.CreatedAt)
-                            .ToList();
-            MyTicketsGrid.ItemsSource = tickets;
+            MyTicketsGrid.ItemsSource = db.Tickets
+                                          .Where(t => t.UserId == _currentUser.Id)
+                                          .OrderByDescending(t => t.CreatedAt)
+                                          .ToList();
+            // Vide la zone commentaires si on recharge la grille
+            CommentsListUser.ItemsSource = null;
         }
 
-        private void Refresh_Click(object sender, RoutedEventArgs e) => LoadMyTickets();
+        private void Refresh_Click(object sender, RoutedEventArgs e)
+        {
+            LoadMyTickets();
+        }
 
+        // Quand on sélectionne un ticket, on charge ses commentaires
         private void MyTicketsGrid_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            if (!(MyTicketsGrid.SelectedItem is Ticket t)) return;
+            if (!(MyTicketsGrid.SelectedItem is Ticket t))
+            {
+                CommentsListUser.ItemsSource = null;
+                return;
+            }
 
-            // Charge les commentaires de l'utilisateur
             using var db = new AppDbContext();
             var comments = db.Comments
                              .Where(c => c.TicketId == t.Id)
@@ -43,6 +53,7 @@ namespace Ticketing_Harry_Poter.Views
             CommentsListUser.ItemsSource = comments;
         }
 
+        // Ajout d'un nouveau commentaire sous le ticket sélectionné
         private void AddComment_Click(object sender, RoutedEventArgs e)
         {
             if (!(MyTicketsGrid.SelectedItem is Ticket t)) return;
@@ -55,25 +66,29 @@ namespace Ticketing_Harry_Poter.Views
                 TicketId = t.Id,
                 Author = _currentUser.Username,
                 Content = content,
-                CreatedAt = System.DateTime.Now
+                CreatedAt = DateTime.Now
             };
             db.Comments.Add(comment);
             db.SaveChanges();
 
-            // Recharger la liste
-            var comments = db.Comments
-                             .Where(c => c.TicketId == t.Id)
-                             .OrderBy(c => c.CreatedAt)
-                             .ToList();
-            CommentsListUser.ItemsSource = comments;
+            // On remet à jour la liste des commentaires directement
             NewCommentBoxUser.Clear();
+            MyTicketsGrid_SelectionChanged(null, null);
         }
 
+        // Retour à la page de login
+        private void BtnHome_Click(object sender, RoutedEventArgs e)
+        {
+            var login = new LoginWindow();
+            login.Show();
+            this.Close();
+        }
         private void NewTicket_Click(object sender, RoutedEventArgs e)
         {
             var win = new NewTicketWindow(_currentUser) { Owner = this };
             if (win.ShowDialog() == true)
                 LoadMyTickets();
         }
+
     }
 }

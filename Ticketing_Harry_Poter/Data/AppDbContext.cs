@@ -1,4 +1,6 @@
-﻿using System.Configuration;
+﻿using System;
+using System.Configuration;
+using System.IO;
 using Microsoft.EntityFrameworkCore;
 using Ticketing_Harry_Poter.Models;
 
@@ -6,16 +8,23 @@ namespace Ticketing_Harry_Poter.Data
 {
     public class AppDbContext : DbContext
     {
-        // Vos tables
         public DbSet<User> Users { get; set; }
         public DbSet<Ticket> Tickets { get; set; }
         public DbSet<Comment> Comments { get; set; }
 
+        public AppDbContext() { }
+        public AppDbContext(DbContextOptions<AppDbContext> options)
+            : base(options) { }
+
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            if (!optionsBuilder.IsConfigured)
+            if (optionsBuilder.IsConfigured)
+                return;
+
+            if (File.Exists("ticketing.db"))
+                optionsBuilder.UseSqlite("Data Source=ticketing.db");
+            else
             {
-                // Lit la connexion depuis App.config / Web.config
                 var cs = ConfigurationManager
                             .ConnectionStrings["DefaultConnection"]
                             .ConnectionString;
@@ -25,15 +34,13 @@ namespace Ticketing_Harry_Poter.Data
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            // Nomme explicitement les tables
             modelBuilder.Entity<User>().ToTable("Users");
             modelBuilder.Entity<Ticket>().ToTable("Tickets");
             modelBuilder.Entity<Comment>().ToTable("Comments");
 
-            // Configure la relation Ticket ← Comment
             modelBuilder.Entity<Comment>()
                 .HasOne(c => c.Ticket)
-                .WithMany(t => t.Comments)        // nécessite ICollection<Comment> Comments dans Ticket
+                .WithMany(t => t.Comments)
                 .HasForeignKey(c => c.TicketId)
                 .OnDelete(DeleteBehavior.Cascade);
 

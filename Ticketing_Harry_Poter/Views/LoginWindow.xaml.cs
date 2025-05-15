@@ -2,7 +2,6 @@
 using System.Windows;
 using Ticketing_Harry_Poter.Data;
 using Ticketing_Harry_Poter.Models;
-using Ticketing_Harry_Poter.Views;
 
 namespace Ticketing_Harry_Poter.Views
 {
@@ -13,35 +12,20 @@ namespace Ticketing_Harry_Poter.Views
             InitializeComponent();
         }
 
-        // Admin niveau 1
-        private void Admin_Click1(object s, RoutedEventArgs e) => OpenAdmin(1);
-        // Admin niveau 2
-        private void Admin_Click2(object s, RoutedEventArgs e) => OpenAdmin(2);
-        // Admin niveau 3
-        private void Admin_Click3(object s, RoutedEventArgs e) => OpenAdmin(3);
-
-        private void OpenAdmin(int level)
+        // L’utilisateur doit toujours entrer son prénom
+        private void User_Click(object sender, RoutedEventArgs e)
         {
-            var win = new AdminDashboard(level);
-            win.Show();
-            Close();
-        }
-
-        private void User_Login_Click(object sender, RoutedEventArgs e)
-        {
-            ErrorText.Visibility = Visibility.Collapsed;
-            var prenom = FirstNameBox.Text.Trim();
-            if (string.IsNullOrWhiteSpace(prenom))
+            var prenom = FirstNameBox.Text;
+            if (string.IsNullOrEmpty(prenom))
             {
-                ErrorText.Text = "Veuillez saisir votre prénom.";
+                ErrorText.Text = "Veuillez renseigner un prénom.";
                 ErrorText.Visibility = Visibility.Visible;
                 return;
             }
 
             using var db = new AppDbContext();
-            var user = db.Users
-                         .FirstOrDefault(u => u.Username.ToLower() == prenom.ToLower()
-                                           && u.Role == "User");
+            var user = db.Users.FirstOrDefault(u =>
+                u.Username.ToLower() == prenom.ToLower() && u.Role == "User");
             if (user == null)
             {
                 ErrorText.Text = $"Prénom '{prenom}' non reconnu.";
@@ -49,8 +33,36 @@ namespace Ticketing_Harry_Poter.Views
                 return;
             }
 
-            new UserDashboard(user).Show();
+            var uw = new UserDashboard(user);
+            uw.Show();
             Close();
         }
+
+        // Pour les admins, on ouvre directement sans prénom
+        private void Admin_Click1(object sender, RoutedEventArgs e)
+        {
+            var aw = new AdminDashboard(1);
+            aw.Show();
+            Close();
+        }
+
+        private void Admin_Click2(object sender, RoutedEventArgs e)
+        {
+            var aw = new AdminDashboard(2);
+            aw.Show();
+            Close();
+        }
+
+        private void Admin_Click3(object sender, RoutedEventArgs e)
+        {
+            var aw = new AdminDashboard(3);
+            aw.Show();
+            Close();
+        }
+        private void BtnClose_Click(object sender, RoutedEventArgs e)
+        {
+            this.Close();
+        }
+
     }
 }
