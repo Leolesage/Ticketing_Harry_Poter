@@ -1,24 +1,40 @@
-﻿<Application x:Class="Ticketing_Harry_Poter.App"
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Application x:Class="Ticketing_Harry_Poter.App"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              StartupUri="Views/LoginWindow.xaml">
-    <Application.Resources>
-        <!-- Police HarryP (fichier HARRYP_.ttf) -->
-        <FontFamily x:Key="HarryPFont">
-            pack://application:,,,/Ticketing_Harry_Poter;component/Resources/Fonts/HARRYP_.ttf#HarryP
-        </FontFamily>
 
-        <!-- Cinzel Regular -->
+    <Application.Resources>
+        <!-- Déclaration des FontFamily à l’échelle de l’appli -->
+        <FontFamily x:Key="HarryPFont">
+            pack://application:,,,/Ticketing_Harry_Poter;component/Resources/Fonts/HARRYP__.ttf#Harry P
+        </FontFamily>
         <FontFamily x:Key="CinzelRegular">
             pack://application:,,,/Ticketing_Harry_Poter;component/Resources/Fonts/Cinzel-Regular.ttf#Cinzel
         </FontFamily>
-
-        <!-- Cinzel Decorative (pour les titres) -->
         <FontFamily x:Key="CinzelDecorative">
             pack://application:,,,/Ticketing_Harry_Poter;component/Resources/Fonts/CinzelDecorative-Regular.ttf#Cinzel Decorative
         </FontFamily>
 
-        <!-- Vous pouvez ajouter d’autres variantes si besoin -->
+        <!-- Exemple de style global de bouton (facultatif) -->
+        <Style x:Key="RoundedButtonStyle" TargetType="Button">
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="FontFamily" Value="{StaticResource HarryPFont}"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="Height" Value="36"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}"
+                    CornerRadius="18"
+                    BorderBrush="{TemplateBinding BorderBrush}"
+                    BorderThickness="{TemplateBinding BorderThickness}">
+                            <ContentPresenter HorizontalAlignment="Center"
+                                VerticalAlignment="Center"/>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
     </Application.Resources>
 </Application>
-

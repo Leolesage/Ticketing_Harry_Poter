@@ -15,9 +15,10 @@ namespace Ticketing_Harry_Poter.Views
         {
             InitializeComponent();
             _currentUser = user;
-            UserNameText.Text = user.Username;
+            UserNameText.Text = user.Username;  
             LoadMyTickets();
         }
+
 
         // Charge les tickets de l'utilisateur
         private void LoadMyTickets()
@@ -30,6 +31,17 @@ namespace Ticketing_Harry_Poter.Views
             // Vide la zone commentaires si on recharge la grille
             CommentsListUser.ItemsSource = null;
         }
+
+            private void BtnHome_Click(object sender, RoutedEventArgs e)
+            {
+                // Ouvre la fenêtre de login
+                var login = new LoginWindow();
+                login.Show();
+
+                // Ferme la fenêtre actuelle
+                this.Close();
+            }
+ 
 
         private void Refresh_Click(object sender, RoutedEventArgs e)
         {
@@ -76,13 +88,6 @@ namespace Ticketing_Harry_Poter.Views
             MyTicketsGrid_SelectionChanged(null, null);
         }
 
-        // Retour à la page de login
-        private void BtnHome_Click(object sender, RoutedEventArgs e)
-        {
-            var login = new LoginWindow();
-            login.Show();
-            this.Close();
-        }
         private void NewTicket_Click(object sender, RoutedEventArgs e)
         {
             var win = new NewTicketWindow(_currentUser) { Owner = this };

@@ -8,15 +8,21 @@
         ResizeMode="NoResize">
 
     <Window.Resources>
-        <!-- Fond principal : château -->
+        <!-- Polices -->
+        <FontFamily x:Key="HarryPFont">
+            pack://application:,,,/Ticketing_Harry_Poter;component/Resources/Fonts/HARRYP__.ttf#Harry P
+        </FontFamily>
+        <FontFamily x:Key="CinzelRegular">
+            pack://application:,,,/Ticketing_Harry_Poter;component/Resources/Fonts/Cinzel-Regular.ttf#Cinzel
+        </FontFamily>
+        <!-- Fonds -->
         <ImageBrush x:Key="CastleBrush"
                 ImageSource="pack://application:,,,/Ticketing_Harry_Poter;component/Resources/caste.jpg"
                 Stretch="UniformToFill"/>
-        <!-- Fond panneau détails : parchemin ticket.png -->
         <ImageBrush x:Key="TicketBrush"
                 ImageSource="pack://application:,,,/Ticketing_Harry_Poter;component/Resources/ticket.png"
                 Stretch="UniformToFill"/>
-        <!-- Style générique pour boutons arrondis -->
+        <!-- Style boutons arrondis -->
         <Style x:Key="RoundedButtonStyle" TargetType="Button">
             <Setter Property="Foreground" Value="White"/>
             <Setter Property="FontFamily" Value="{StaticResource HarryPFont}"/>
@@ -25,10 +31,8 @@
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="Button">
-                        <Border Background="{TemplateBinding Background}"
-                    CornerRadius="18">
-                            <ContentPresenter HorizontalAlignment="Center"
-                                VerticalAlignment="Center"/>
+                        <Border Background="{TemplateBinding Background}" CornerRadius="18">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
                         </Border>
                     </ControlTemplate>
                 </Setter.Value>
@@ -36,146 +40,150 @@
         </Style>
     </Window.Resources>
 
-    <!-- Applique le château en fond de fenêtre -->
+    <!-- Fond global : château -->
     <Window.Background>
         <StaticResource ResourceKey="CastleBrush"/>
     </Window.Background>
 
-    <Grid>
-        <!-- En-tête + Contenu -->
+    <Grid Margin="20">
+        <!-- 1) entête logo + titre ; 2) reste de la page -->
         <Grid.RowDefinitions>
-            <RowDefinition Height="60"/>
+            <RowDefinition Height="220"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="2*"/>
-            <ColumnDefinition Width="1*"/>
+            <ColumnDefinition Width="1.6*"/>
+            <ColumnDefinition Width="1.4*"/>
         </Grid.ColumnDefinitions>
 
-        <!-- ========== EN-TÊTE ========== -->
-        <Grid Grid.Row="0" Grid.ColumnSpan="2" Background="#80000000">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="Auto"/>
-                <ColumnDefinition Width="*"/>
-            </Grid.ColumnDefinitions>
-            <!-- Logo cliquable -->
+        <!-- ENTÊTE -->
+        <DockPanel Grid.Row="0" Grid.ColumnSpan="2" Background="#80000000" LastChildFill="False">
             <Button x:Name="BtnHome"
-              Grid.Column="0"
-              Width="40" Height="40"
+              Width="200" Height="200"
               Margin="10"
               Background="Transparent"
               BorderThickness="0"
-              Click="BtnHome_Click">
+              Click="BtnHome_Click"
+              DockPanel.Dock="Left">
                 <Image Source="pack://application:,,,/Ticketing_Harry_Poter;component/Resources/logo.png"
                Stretch="Uniform"/>
             </Button>
-            <!-- Titre centré -->
-            <TextBlock Grid.Column="1"
-                 Text="LE GRAND REGISTRE"
+            <TextBlock Text="LE GRAND REGISTRE"
                  FontFamily="{StaticResource HarryPFont}"
-                 FontSize="28"
+                 FontSize="70"
                  Foreground="White"
                  VerticalAlignment="Center"
-                 HorizontalAlignment="Center"/>
-        </Grid>
+                 HorizontalAlignment="Center"
+                 DockPanel.Dock="Left"/>
+        </DockPanel>
 
-        <!-- ========== COLONNE GAUCHE : FILTRES & TABLEAU ========== -->
-        <Grid Grid.Row="1" Grid.Column="0" Margin="20,10,10,20">
+        <!-- GAUCHE : filtres + DataGrid -->
+        <Grid Grid.Row="1" Grid.Column="0">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="*"/>
             </Grid.RowDefinitions>
-
-            <!-- Filtres & nouveau ticket -->
             <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="0,0,0,10">
-                <ComboBox x:Name="StatusFilter"
-                  Width="120"
-                  SelectionChanged="Filter_Changed"/>
+                <ComboBox x:Name="StatusFilter" Width="120" SelectionChanged="Filter_Changed"/>
                 <TextBox x:Name="SearchBox"
                  Width="200"
                  VerticalContentAlignment="Center"
                  TextChanged="SearchBox_TextChanged"
                  Margin="10,0,0,0"/>
-                <Button Content="Rafraîchir"
-                Click="Refresh_Click"
-                Margin="10,0,0,0"/>
-                <Button Content="Nouveau Ticket"
-                Click="NewTicket_Click"
-                Margin="20,0,0,0"/>
+                <Button Content="Rafraîchir" Click="Refresh_Click" Margin="10,0,0,0"/>
+                <Button Content="Nouveau Ticket" Click="NewTicket_Click" Margin="20,0,0,0"/>
             </StackPanel>
-
-            <!-- DataGrid -->
             <DataGrid x:Name="TicketsGrid"
                 Grid.Row="1"
                 AutoGenerateColumns="False"
                 IsReadOnly="True"
+                SelectionMode="Single"
                 SelectionChanged="TicketsGrid_SelectionChanged"
                 Background="#C0FFFFFF">
                 <DataGrid.Columns>
-                    <DataGridTextColumn Header="ID"          Binding="{Binding Id}"            Width="40"/>
-                    <DataGridTextColumn Header="Titre"       Binding="{Binding Title}"         Width="*"/>
+                    <DataGridTextColumn Header="ID"         Binding="{Binding Id}"            Width="40"/>
+                    <DataGridTextColumn Header="Titre"      Binding="{Binding Title}"         Width="*"/>
                     <DataGridTextColumn Header="Utilisateur" Binding="{Binding User.Username}" Width="120"/>
-                    <DataGridTextColumn Header="Créé le"     Binding="{Binding CreatedAt}"     Width="150"/>
-                    <DataGridTextColumn Header="Statut"      Binding="{Binding Status}"        Width="100"/>
-                    <DataGridTextColumn Header="Niv."        Binding="{Binding IncidentLevel}" Width="60"/>
+                    <DataGridTextColumn Header="Créé le"    Binding="{Binding CreatedAt, StringFormat=d}" Width="150"/>
+                    <DataGridTextColumn Header="Statut"     Binding="{Binding Status}"        Width="100"/>
+                    <DataGridTextColumn Header="Niv."       Binding="{Binding IncidentLevel}" Width="60"/>
                 </DataGrid.Columns>
             </DataGrid>
         </Grid>
 
-        <!-- ========== COLONNE DROITE : DÉTAILS DU TICKET ========== -->
-        <Border Grid.Row="1" Grid.Column="1"
+        <!-- DROITE : détail ticket sur toute la hauteur restante -->
+        <Border Grid.Row="1"
+            Grid.Column="1"
             Background="{StaticResource TicketBrush}"
-            Margin="10,10,20,20">
+            VerticalAlignment="Stretch"
+            HorizontalAlignment="Stretch"
+            Padding="20">
             <ScrollViewer VerticalScrollBarVisibility="Auto">
-                <StackPanel Margin="20" >
-
+                <StackPanel>
                     <TextBlock Text="DÉTAILS DU TICKET"
                      FontFamily="{StaticResource HarryPFont}"
                      FontSize="20"
-                     Foreground="#7F0909"
+                     Foreground="#000000"
                      TextAlignment="Center"
                      Margin="0,0,0,16"/>
 
-                    <!-- TITRE -->
-                    <TextBlock Text="TITRE" FontFamily="{StaticResource CinzelRegular}" FontSize="12"/>
+                    <TextBlock Text="TITRE"
+                     FontFamily="{StaticResource CinzelRegular}"
+                     FontSize="12"/>
                     <TextBox x:Name="DetailTitle" Margin="0,4,0,12"/>
 
-                    <!-- DESCRIPTION -->
-                    <TextBlock Text="DESCRIPTION" FontFamily="{StaticResource CinzelRegular}" FontSize="12"/>
+                    <TextBlock Text="DESCRIPTION"
+                     FontFamily="{StaticResource CinzelRegular}"
+                     FontSize="12"/>
                     <TextBox x:Name="DetailDesc"
                    Height="80"
                    TextWrapping="Wrap"
                    AcceptsReturn="True"
                    Margin="0,4,0,12"/>
 
-                    <!-- CATÉGORIE -->
-                    <TextBlock Text="CATÉGORIE" FontFamily="{StaticResource CinzelRegular}" FontSize="12"/>
+                    <TextBlock Text="CATÉGORIE"
+                     FontFamily="{StaticResource CinzelRegular}"
+                     FontSize="12"/>
                     <ComboBox x:Name="DetailCategory" Margin="0,4,0,12"/>
 
-                    <!-- PRIORITÉ -->
-                    <TextBlock Text="PRIORITÉ" FontFamily="{StaticResource CinzelRegular}" FontSize="12"/>
+                    <TextBlock Text="PRIORITÉ"
+                     FontFamily="{StaticResource CinzelRegular}"
+                     FontSize="12"/>
                     <ComboBox x:Name="DetailPriority" Margin="0,4,0,12"/>
 
-                    <!-- STATUT -->
-                    <TextBlock Text="STATUT" FontFamily="{StaticResource CinzelRegular}" FontSize="12"/>
+                    <TextBlock Text="STATUT"
+                     FontFamily="{StaticResource CinzelRegular}"
+                     FontSize="12"/>
                     <ComboBox x:Name="DetailStatus" Margin="0,4,0,12"/>
-                    <!-- COMMENTAIRES -->
-                    <TextBlock Text="COMMENTAIRES" FontFamily="{StaticResource CinzelRegular}" FontSize="12"/>
+
+                    <TextBlock Text="COMMENTAIRES"
+                     FontFamily="{StaticResource CinzelRegular}"
+                     FontSize="12"
+                     Margin="0,8,0,4"/>
                     <ListBox x:Name="CommentsList"
                    Height="80"
                    Margin="0,4,0,12"
-                   DisplayMemberPath="Content"/>
+                   Background="White">
+                        <ListBox.ItemTemplate>
+                            <DataTemplate>
+                                <TextBlock TextWrapping="Wrap" Margin="0,2">
+                  <Run Text="{Binding Author}"/>
+                  <Run Text=": "/>
+                  <Run Text="{Binding Content}"/>
+                                </TextBlock>
+                            </DataTemplate>
+                        </ListBox.ItemTemplate>
+                    </ListBox>
 
                     <TextBox x:Name="NewCommentBox"
                    Height="60"
                    TextWrapping="Wrap"
                    AcceptsReturn="True"
-                   Margin="0,4,0,12"/>
+                   Margin="0,0,0,12"/>
 
-                    <!-- Boutons d’action : Sauver / Escalader / Supprimer -->
                     <StackPanel Orientation="Horizontal"
                       HorizontalAlignment="Center"
-                      Margin="0,12,0,0">
+                      Margin="0,12,0,16">
                         <Button Content="Sauver"
                     Click="Save_Click"
                     Style="{StaticResource RoundedButtonStyle}"
@@ -195,15 +203,13 @@
                     Width="100"/>
                     </StackPanel>
 
-                    <!-- Ajouter nouveau commentaire -->
                     <Button Content="Ajouter commentaire"
-                    Click="AddComment_Click"
-                    Style="{StaticResource RoundedButtonStyle}"
-                    Background="#7F0909"
-                    HorizontalAlignment="Right"
-                    Margin="0,16,0,0"
-                    MinWidth="160"
-                    Height="36"/>
+                  Click="AddComment_Click"
+                  Style="{StaticResource RoundedButtonStyle}"
+                  Background="#7F0909"
+                  HorizontalAlignment="Right"
+                  MinWidth="160"
+                  Height="36"/>
                 </StackPanel>
             </ScrollViewer>
         </Border>

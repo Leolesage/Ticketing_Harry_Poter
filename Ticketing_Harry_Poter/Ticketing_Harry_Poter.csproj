@@ -6,10 +6,22 @@
 	</PropertyGroup>
 	<ItemGroup>
 	  <None Remove="Resources\caste.jpg" />
+	  <None Remove="Resources\cire.png" />
 	  <None Remove="Resources\door.jpg" />
+	  <None Remove="Resources\Fonts\Cinzel-Black.otf" />
+	  <None Remove="Resources\Fonts\Cinzel-Bold.otf" />
+	  <None Remove="Resources\Fonts\Cinzel-Regular.otf" />
+	  <None Remove="Resources\Fonts\CinzelDecorative-Black.otf" />
+	  <None Remove="Resources\Fonts\CinzelDecorative-Bold.otf" />
+	  <None Remove="Resources\Fonts\CinzelDecorative-Regular.otf" />
+	  <None Remove="Resources\Fonts\HARRYP__.TTF" />
 	  <None Remove="Resources\logo.png" />
 	  <None Remove="Resources\parchment.png" />
 	  <None Remove="Resources\ticket.png" />
+	</ItemGroup>
+	<ItemGroup>
+	  <Resource Include="Resources\cire.png" />
+	  <Resource Include="Resources\Fonts\Cinzel-Black.otf" />
 	</ItemGroup>
 	<ItemGroup>
 		<PackageReference Include="Microsoft.EntityFrameworkCore" Version="7.0.0" />
@@ -27,6 +39,12 @@
 	<ItemGroup>
 	  <Resource Include="Resources\caste.jpg" />
 	  <Resource Include="Resources\door.jpg" />
+	  <Resource Include="Resources\Fonts\Cinzel-Bold.otf" />
+	  <Resource Include="Resources\Fonts\Cinzel-Regular.otf" />
+	  <Resource Include="Resources\Fonts\CinzelDecorative-Black.otf" />
+	  <Resource Include="Resources\Fonts\CinzelDecorative-Bold.otf" />
+	  <Resource Include="Resources\Fonts\CinzelDecorative-Regular.otf" />
+	  <Resource Include="Resources\Fonts\HARRYP__.TTF" />
 	  <Resource Include="Resources\logo.png" />
 	  <Resource Include="Resources\parchment.png" />
 	  <Resource Include="Resources\ticket.png" />

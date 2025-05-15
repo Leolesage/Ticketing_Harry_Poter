@@ -10,6 +10,14 @@
         ResizeMode="NoResize">
 
     <Window.Resources>
+        <!-- Polices héritées du App.xaml -->
+        <FontFamily x:Key="HarryPFont">
+            pack://application:,,,/Ticketing_Harry_Poter;component/Resources/Fonts/HARRYP__.ttf#Harry P
+        </FontFamily>
+        <FontFamily x:Key="CinzelRegular">
+            pack://application:,,,/Ticketing_Harry_Poter;component/Resources/Fonts/Cinzel-Regular.ttf#Cinzel
+        </FontFamily>
+
         <!-- Style pour boutons arrondis -->
         <Style x:Key="RoundedButtonStyle" TargetType="Button">
             <Setter Property="Foreground" Value="White"/>
@@ -20,9 +28,9 @@
                 <Setter.Value>
                     <ControlTemplate TargetType="Button">
                         <Border Background="{TemplateBinding Background}"
-                    CornerRadius="18">
+                                CornerRadius="18">
                             <ContentPresenter HorizontalAlignment="Center"
-                                VerticalAlignment="Center"/>
+                                              VerticalAlignment="Center"/>
                         </Border>
                     </ControlTemplate>
                 </Setter.Value>
@@ -33,53 +41,88 @@
     <Grid>
         <!-- 1) Le parchemin qui déborde un peu -->
         <Image Source="/Ticketing_Harry_Poter;component/Resources/parchment.png"
-           Stretch="UniformToFill"
-           Margin="-20"/>
+               Stretch="UniformToFill"
+               Margin="-20"/>
 
         <!-- 2) Contenu centré, transparent derrière -->
         <Grid Margin="40" Background="Transparent">
-            <ScrollViewer VerticalScrollBarVisibility="Auto">
+            <!-- Bouton Fermer (croix) en haut à droite -->
+            <Button x:Name="BtnClose"
+                    Content="✖"
+                    FontSize="16"
+                    Foreground="Black"
+                    Background="Transparent"
+                    BorderThickness="0"
+                    Width="30" Height="30"
+                    HorizontalAlignment="Right"
+                    VerticalAlignment="Top"
+                    Click="Cancel_Click"/>
+
+            <ScrollViewer VerticalScrollBarVisibility="Auto" Margin="0,30,0,0">
                 <StackPanel>
 
                     <TextBlock Text="INVOQUE TON TICKET D’ASSISTANCE"
-                     FontFamily="{StaticResource HarryPFont}"
-                     FontSize="22"
-                     Foreground="#7F0909"
-                     TextAlignment="Center"
-                     Margin="0,0,0,16"/>
+                               FontFamily="{StaticResource HarryPFont}"
+                               FontSize="22"
+                               Foreground="#7F0909"
+                               TextAlignment="Center"
+                               Margin="0,0,0,16"/>
 
-                    <TextBlock Text="TITRE" FontFamily="{StaticResource CinzelRegular}" FontSize="11" Margin="0,0,0,4"/>
-                    <TextBox x:Name="TitleBox" FontSize="13" Height="28" Margin="0,0,0,12"/>
+                    <TextBlock Text="TITRE"
+                               FontFamily="{StaticResource CinzelRegular}"
+                               FontSize="11"
+                               Margin="0,0,0,4"/>
+                    <TextBox x:Name="TitleBox"
+                             FontSize="13"
+                             Height="28"
+                             Margin="0,0,0,12"/>
 
-                    <TextBlock Text="CATÉGORIE" FontFamily="{StaticResource CinzelRegular}" FontSize="11" Margin="0,0,0,4"/>
-                    <ComboBox x:Name="CategoryBox" FontSize="13" Height="28" Margin="0,0,0,12"/>
+                    <TextBlock Text="CATÉGORIE"
+                               FontFamily="{StaticResource CinzelRegular}"
+                               FontSize="11"
+                               Margin="0,0,0,4"/>
+                    <ComboBox x:Name="CategoryBox"
+                              FontSize="13"
+                              Height="28"
+                              Margin="0,0,0,12"/>
 
-                    <TextBlock Text="PRIORITÉ" FontFamily="{StaticResource CinzelRegular}" FontSize="11" Margin="0,0,0,4"/>
-                    <ComboBox x:Name="PriorityBox" FontSize="13" Height="28" Margin="0,0,0,12"/>
+                    <TextBlock Text="PRIORITÉ"
+                               FontFamily="{StaticResource CinzelRegular}"
+                               FontSize="11"
+                               Margin="0,0,0,4"/>
+                    <ComboBox x:Name="PriorityBox"
+                              FontSize="13"
+                              Height="28"
+                              Margin="0,0,0,12"/>
 
-                    <TextBlock Text="DESCRIPTION" FontFamily="{StaticResource CinzelRegular}" FontSize="11" Margin="0,0,0,4"/>
+                    <TextBlock Text="DESCRIPTION"
+                               FontFamily="{StaticResource CinzelRegular}"
+                               FontSize="11"
+                               Margin="0,0,0,4"/>
                     <TextBox x:Name="DescBox"
-                   FontSize="13"
-                   Height="100"
-                   TextWrapping="Wrap"
-                   AcceptsReturn="True"
-                   Margin="0,0,0,20"/>
+                             FontSize="13"
+                             Height="100"
+                             TextWrapping="Wrap"
+                             AcceptsReturn="True"
+                             Margin="0,0,0,20"/>
+
+                    <!-- … reste du XAML inchangé … -->
 
                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                        <Button Style="{StaticResource RoundedButtonStyle}"
-                    x:Name="BtnSend"
-                    Content="ENVOYER"
-                    Background="#7F0909"
-                    Width="120"
-                    Margin="0,0,8,0"
-                    Click="Send_Click"/>
-                        <Button Style="{StaticResource RoundedButtonStyle}"
-                    x:Name="BtnCancel"
-                    Content="FERMER"
-                    Background="#2A623D"
-                    Width="120"
-                    Click="Cancel_Click"/>
+                        <Button x:Name="BtnSend"
+            Click="Send_Click"
+            Background="Transparent"
+            BorderThickness="0"
+            Width="80"
+            Height="80">
+                            <Image Source="/Resources/cire.png"
+               Stretch="Uniform"
+               ToolTip="Envoyer le ticket"/>
+                        </Button>
                     </StackPanel>
+
+                    <!-- … suite du XAML … -->
+
 
                 </StackPanel>
             </ScrollViewer>

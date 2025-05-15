@@ -64,5 +64,6 @@ namespace Ticketing_Harry_Poter.Views
         {
             DialogResult = false;
         }
+
     }
 }
